@@ -8,7 +8,7 @@
 
 
 
-/***** AR488_GPIBbus.cpp, ver. 0.53.04, 13/04/2025 *****/
+/***** AR488_GPIBbus.cpp, ver. 0.53.05, 18/04/2025 *****/
 
 
 /*********************************************/
@@ -219,7 +219,7 @@ public:
 
   bool addressDevice(uint8_t pri, uint8_t sec, uint8_t dir);
   bool unAddressDevice();
-  bool haveAddressedDevice();
+  uint8_t haveAddressedDevice();
 
 private:
 

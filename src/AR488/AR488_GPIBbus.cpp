@@ -3,7 +3,7 @@
 #include "AR488_Config.h"
 #include "AR488_GPIBbus.h"
 
-/***** AR488_GPIB.cpp, ver. 0.53.04, 13/04/2025 *****/
+/***** AR488_GPIB.cpp, ver. 0.53.05, 18/04/2025 *****/
 
 
 /****** Process status values *****/
@@ -76,7 +76,7 @@ void GPIBbus::stop() {
 /***** Initialise the interface *****/
 void GPIBbus::setDefaultCfg() {
   // Set default controller mode values ({'\0'} sets version string array to null)
-  cfg = { false, false, 2, 0, 1, 0xFF, 0, 0, 0, 1200, 0, { '\0' }, 0, { '\0' }, 0, 0 };
+  cfg = { false, false, 2, 0, 1, 0xFF, 0, 0, 0, 1200, 0, { '\0' }, 0, { '\0' }, 0, 0, 0 };
 }
 
 
@@ -1034,7 +1034,7 @@ bool GPIBbus::addressDevice(uint8_t pri, uint8_t sec=0xFF, uint8_t dir=TOLISTEN)
 /*
  * true = device has been addressed; false = device has not been addressed
  */
-bool GPIBbus::haveAddressedDevice() {
+uint8_t GPIBbus::haveAddressedDevice() {
   return deviceAddressed;
 }
 

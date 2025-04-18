@@ -7,7 +7,7 @@
 
 
 /***** Firmware version *****/
-#define FWVER "AR488 GPIB controller, ver. 0.53.04, 13/04/2025"
+#define FWVER "AR488 GPIB controller, ver. 0.53.05, 18/04/2025"
 
 
 /***** BOARD CONFIGURATION *****/
@@ -64,8 +64,8 @@
 /***** Pololu 328PB board *****/
 #elif __AVR_ATmega328PB__
   /* Board/layout selection */
-  //#define AR488_UNO
-  #define AR488_328PB_ALT
+  #define AR488_UNO
+  //#define AR488_328PB_ALT
 
 /***** ESP32 boards *****/
 #elif defined(ESP32)

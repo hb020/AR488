@@ -14,7 +14,7 @@
 #include "AR488_Eeprom.h"
 
 
-/***** FWVER "AR488 GPIB controller, ver. 0.53.04, 13/04/2025" *****/
+/***** FWVER "AR488 GPIB controller, ver. 0.53.05, 18/04/2025" *****/
 
 /*
   Arduino IEEE-488 implementation by John Chajecki
@@ -1341,8 +1341,8 @@ void ver_h(char *params) {
 
 /***** Address device to talk and read the sent data *****/
 void read_h(char *params) {
-  uint8_t maxparam = 3;
-  uint8_t pcnt = 0;
+//  uint8_t maxparam = 3;
+//  uint8_t pcnt = 0;
   uint8_t pri = gpibBus.cfg.paddr;
   uint8_t sec = gpibBus.cfg.saddr;
   uint16_t val = 0xFF;
@@ -2429,13 +2429,11 @@ void fndl_h(char *params) {
   uint8_t addrList[15] = {0};
   uint16_t tmo = gpibBus.cfg.rtmo;
   uint8_t acnt = 0;
-//  uint8_t xmit = true;
   uint8_t i = 0;
   uint8_t j = 0;
   uint8_t pri = 0xFF;
   unsigned long range[2] = {0,0};
   bool list = false;
-  bool secfound = false;
 
   // Initialise arrays
   for (int i = 0; i < 15; i++) {
@@ -2571,7 +2569,6 @@ void fndl_h(char *params) {
             gpibBus.assertSignal(ATN_BIT);
             gpibBus.writeByte(GC_UNT, false);
           }
-//          delayMicroseconds(50);
         }
 
         gpibBus.clearSignal(ATN_BIT);
@@ -2582,14 +2579,12 @@ void fndl_h(char *params) {
     } // End if NDAC aserted (else)
 
     gpibBus.setControls(CIDS);
-//    delay(50);
     i++;
 
   } // END while
 
   dataPort.println();
   gpibBus.cfg.rtmo = tmo;
-//  if (xmit) gpibBus.sendCmd(GC_UNL);
   gpibBus.setControls(CIDS);
 
 }
@@ -2604,7 +2599,6 @@ void fndl_h(char *params) {
 //void secsend_h(char *params) {
 void send_h(char *params) {
   char * param;
-  char * data;
   uint8_t pri = 0xFF;
   uint8_t sec = 0xFF;
   uint16_t val;
