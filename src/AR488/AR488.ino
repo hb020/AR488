@@ -14,7 +14,7 @@
 #include "AR488_Eeprom.h"
 
 
-/***** FWVER "AR488 GPIB controller, ver. 0.53.05, 18/04/2025" *****/
+/***** FWVER "AR488 GPIB controller, ver. 0.53.07, 30/04/2025" *****/
 
 /*
   Arduino IEEE-488 implementation by John Chajecki
@@ -412,7 +412,7 @@ void setup() {
   }
 #endif
 
-  if (gpibBus.cfg.hflags & 0x01) dataPort.print(F("AR488~RDY"));
+  if (gpibBus.cfg.hflags & 0x01) showFlag(F("AR488~RDY"));
 
   dataPort.flush();
 
@@ -477,6 +477,7 @@ if (lnRdy>0){
       if (gpibBus.cfg.amode == 1) {
         gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
         errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+        if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
         gpibBus.unAddressDevice();
       }
 
@@ -484,6 +485,7 @@ if (lnRdy>0){
       if (gpibBus.cfg.amode == 2 && isQuery) {
         gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
         errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+        if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
         isQuery = false;
         gpibBus.unAddressDevice();
       }
@@ -496,6 +498,7 @@ if (lnRdy>0){
       if (lnRdy==0) {
         if (gpibBus.haveAddressedDevice() == TONONE) gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
         errFlg = gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte);
+        if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
       }
     }
 
@@ -888,7 +891,7 @@ void sendToInstrument(char *buffr, uint8_t dsize) {
 #endif
 
   // Show handshake flag
-  if (gpibBus.cfg.hflags & 0x04) dataPort.println("Send^OK");
+  if (gpibBus.cfg.hflags & 0x04) showFlag(F("Send^OK"));
 
   // Show a prompt on completion?
   if (isVerb) showPrompt();
@@ -1411,8 +1414,8 @@ void read_h(char *params) {
   } else {
     // If auto mode is disabled we do a single read
     gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte);
+    if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
     gpibBus.unAddressDevice();
-    if ( !autoRead && (gpibBus.cfg.hflags & 0x02) ) dataPort.println(F("Read^OK"));
   }
 }
 
@@ -2266,8 +2269,8 @@ void printCtrlPinout(){
   printPin(F("NRFD"), NRFD_PIN);
   printPin(F("DAV"), DAV_PIN);
   printPin(F("EOI"), EOI_PIN);
-  printPin(F("SRQ"), SRQ_PIN);
   printPin(F("REN"), REN_PIN);
+  printPin(F("SRQ"), SRQ_PIN);
   printPin(F("ATN"), ATN_PIN);
 }
 
@@ -2394,13 +2397,42 @@ void idn_h(char * params){
  * flags & 0x04 = Send^OK
  */
 void hflags_h(char * params) {
-  uint16_t val;
+  uint16_t val = 0;
+  uint16_t cnt = 0;
+  char * param;
   if (params != NULL) {
-    if (notInRange(params, 0, 7, val)) return;
-    gpibBus.cfg.hflags = (uint8_t)val;
+    param = strtok(params, " ,\t");
+    if (notInRange(param, 0, 7, val)) return;
+    if (val) {
+      param = strtok(NULL, " ,\t");
+      if (param) {
+        if (notInRange(param, 1, 7, cnt)) return;
+      }else{
+        cnt = 1;
+      }
+    }
+    gpibBus.cfg.hflags = (uint8_t)val + ((uint8_t)cnt<<5) ;
   }else{
-    dataPort.println(gpibBus.cfg.hflags);
+    dataPort.print(gpibBus.cfg.hflags & 0x1F);
+    if (gpibBus.cfg.hflags > 0x1F) {
+      dataPort.print(',');
+      dataPort.print(gpibBus.cfg.hflags >> 5);
+    }
+    dataPort.println();
   }
+}
+
+
+void showFlag(const __FlashStringHelper* flag){
+  uint8_t cnt = (gpibBus.cfg.hflags & 0xE0) >> 5;
+  if (!cnt) cnt = 1;
+  dataPort.println();
+  while (cnt) {
+    dataPort.print(flag);
+    if (cnt>1) dataPort.print('%');
+    cnt--;
+  }
+  dataPort.println();
 }
 
 
@@ -2653,7 +2685,7 @@ void send_h(char *params) {
     if (gpibBus.cfg.amode == 1) {
       gpibBus.addressDevice(pri, sec, TOTALK);
       gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
-//      gpibBus.unAddressDevice();
+      if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
     }
 
     gpibBus.unAddressDevice();

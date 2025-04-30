@@ -3,7 +3,7 @@
 #include "AR488_Config.h"
 #include "AR488_GPIBbus.h"
 
-/***** AR488_GPIB.cpp, ver. 0.53.05, 18/04/2025 *****/
+/***** AR488_GPIB.cpp, ver. 0.53.07, 30/04/2025 *****/
 
 
 /****** Process status values *****/
@@ -623,7 +623,7 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
   DB_RAW_PRINTLN();
   DB_PRINT(F("After loop flags:"), "");
   //  DB_PRINT(F("ATN: "), (isAsserted(ATN ? 1 : 0));
-  DB_PRINT(F("TMO: "), r);
+  DB_PRINT(F("TMO: "), cfg.rtmo);
   DB_PRINT(F("Bytes read:  "), x);
   DB_PRINT(F("<- End listen."), "");
 #endif
@@ -1142,7 +1142,7 @@ enum gpibHandshakeStates GPIBbus::readByte(uint8_t *db, bool readWithEoi, bool *
 
   // Otherwise return stage
 #ifdef DEBUG_GPIBbus_RECEIVE
-  if ((gpibState == HANDSHAKE_STARTED) || (gpibState == UNASSERTED_NDAC)) {
+  if ((gpibState == HANDSHAKE_START) || (gpibState == DATA_ACCEPTED)) {
     DB_PRINT(F("DAV timout!"), "");
   } else {
     DB_PRINT(F("Handshake error!"), "");

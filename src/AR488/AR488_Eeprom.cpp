@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 #include "AR488_Eeprom.h"
 
-/***** AR488_Eeprom.cpp, ver. 0.01.02, 17/04/2025 *****/
+/***** AR488_Eeprom.cpp, ver. 0.01.03, 28/04/2025 *****/
 /*
  * EEPROM functions implementation
  */
@@ -125,7 +125,7 @@ bool isEepromClear(){
 /************************************/
 #if defined(ESP8266) || defined(ESP32)
 
-/***** Show all 512 bytes of EEPROM data *****/
+/***** Show all bytes of EEPROM data *****/
 void epViewData(Stream& outputStream) {
   uint16_t addr = 0;
   uint8_t dbuf[16];
@@ -137,7 +137,7 @@ void epViewData(Stream& outputStream) {
   EEPROM.begin(EESIZE);
   // Read data
   memset(dbuf, 0x00, 16);
-  for (addr=0; addr<512; addr=addr+16){
+  for (addr=0; addr<EESIZE; addr=addr+16){
     sprintf(cnt, "%03d", addr);
     outputStream.print(cnt);
     outputStream.print(":");

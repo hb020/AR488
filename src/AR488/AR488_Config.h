@@ -7,7 +7,7 @@
 
 
 /***** Firmware version *****/
-#define FWVER "AR488 GPIB controller, ver. 0.53.05, 18/04/2025"
+#define FWVER "AR488 GPIB controller, ver. 0.53.07, 30/04/2025"
 
 
 /***** BOARD CONFIGURATION *****/
@@ -46,8 +46,8 @@
 /*** MEGA 32U4 based boards (Micro, Leonardo) ***/
 #elif __AVR_ATmega32U4__
   /*** Board/layout selection ***/
-  #define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
-  //#define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
+  //#define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
+  #define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
   
 /*** MEGA 2560 board ***/
 #elif __AVR_ATmega2560__
@@ -64,7 +64,8 @@
 /***** Pololu 328PB board *****/
 #elif __AVR_ATmega328PB__
   /* Board/layout selection */
-  #define AR488_UNO
+  //#define AR488_UNO
+  #define AR488_NANO
   //#define AR488_328PB_ALT
 
 /***** ESP32 boards *****/
@@ -82,7 +83,7 @@
 #elif defined(ARDUINO_ARCH_RP2040)
   /* Board/layout selection */
   #define RAS_PICO_L1
-//  #define RAS_PICO_L2
+  //#define RAS_PICO_L2
 
 //#elif defined(ARDUINO_NANO_RP2040_CONNECT)
 

@@ -4,7 +4,7 @@
 #include "AR488_Config.h"
 //#include <EEPROM.h>
 
-/***** AR488_Eeprom.h, ver. 0.01.02, 17/04/2025 *****/
+/***** AR488_Eeprom.h, ver. 0.01.03, 28/04/2025 *****/
 
 /*
  * EEPROM SIZES:

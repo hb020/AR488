@@ -6,7 +6,7 @@
 #include "AR488_Config.h"
 
 
-/***** AR488_Hardware.h, ver. 0.53.04, 13/04/2025 *****/
+/***** AR488_Hardware.h, ver. 0.53.07, 30/04/2025 *****/
 
 
 ///=================================///
@@ -173,7 +173,7 @@
 #define DIO8_PIN  6   /* GPIB 16 : PORTD bit 7 */
 
 #define IFC_PIN   4   /* GPIB 9  : PORTD bit 4 */
-#define NDAC_PIN  A3  /* GPIB 8  : PORTF bit 4   fast control pins assigned to same port */
+#define NDAC_PIN  A3  /* GPIB 8  : PORTF bit 4 */
 #define NRFD_PIN  A2  /* GPIB 7  : PORTF bit 5 */
 #define DAV_PIN   A1  /* GPIB 6  : PORTF bit 6 */
 #define EOI_PIN   A0  /* GPIB 5  : PORTF bit 7 */
@@ -193,7 +193,6 @@
 /***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvv *****/
 #ifdef AR488_MEGA32U4_LR3
 
-/***** NOTE: LEONARDO R3 pinout last updated 06/04/2020 *****/
 #define DIO1_PIN  A0  /* GPIB 1  : PORTF bit 7 */
 #define DIO2_PIN  A1  /* GPIB 2  : PORTF bit 6 */
 #define DIO3_PIN  A2  /* GPIB 3  : PORTF bit 5 */

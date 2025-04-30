@@ -3,7 +3,7 @@
 #include "AR488_Config.h"
 #include "AR488_Layouts.h"
 
-/***** AR488_Hardware.cpp, ver. 0.53.04, 13/04/2025 *****/
+/***** AR488_Hardware.cpp, ver. 0.53.07, 30/04/2025 *****/
 
 ///=================================================///
 ///       Hardware layout function definitions      ///
@@ -748,8 +748,8 @@ void setGpibCtrlState(uint8_t bits, uint8_t mask) {
   uint8_t portBb = ((bits & 0x0F) << 4);
   uint8_t portBm = ((mask & 0x0F) << 4);
   // PORTD - use bit 4, rotate left 2 positions to set bit 6 on register (EOI_PIN)
-  // PORTD - use bit 5, rotate right 5 positions to set bit 0 on register (REN_PIN)
-  // PORTD - use bit 6, rotate right 5 positions to set bit 1 on register (SRQ_PIN)
+  // PORTD - use bit 5, rotate right 5 positions to set bit 1 on register (REN_PIN)
+  // PORTD - use bit 6, rotate right 5 positions to set bit 0 on register (SRQ_PIN)
   uint8_t portDb = ((bits & 0x10) << 2) + ((bits & 0x20) >> 5) + ((bits & 0x40) >> 5);
   uint8_t portDm = ((mask & 0x10) << 2) + ((mask & 0x20) >> 5) + ((mask & 0x40) >> 5);
   // PORTE - use bit 7, rotate left 1 position to set bit 6 on register (ATN_PIN)
