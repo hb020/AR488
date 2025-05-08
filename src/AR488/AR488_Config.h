@@ -7,7 +7,7 @@
 
 
 /***** Firmware version *****/
-#define FWVER "AR488 GPIB controller, ver. 0.53.10, 07/05/2025"
+#define FWVER "AR488 GPIB controller, ver. 0.53.11, 08/05/2025"
 
 
 /***** BOARD CONFIGURATION *****/
@@ -50,8 +50,8 @@
 
 #elif __AVR_ATmega32U4__
   /** ATmega 32u4 - Micro, Leonardo  **/
-  //#define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
-  #define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
+  #define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
+  //#define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
 
 #elif __AVR_ATmega2560__
   /** ATmega2560 - Mega 2560 **/
@@ -59,20 +59,18 @@
   //#define AR488_MEGA2560_E1
   //#define AR488_MEGA2560_E2
 
-/***** Panduino Mega 644 or Mega 1284 board *****/
 #elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
   /** ATmega 644P, ATmega 1284P, e.g. Panduino **/
   #define AR488_MEGA644P_MCGRAW
 
-#elif __AVR_ATmega4809__
+//#elif __AVR_ATmega4809__
   /** ATmega4809 - Nano Every, UNO WiFi Rev2 **/
-  #define POE_ETHERNET_GPIB_ADAPTOR
+  //#define POE_ETHERNET_GPIB_ADAPTOR
 
-/***** ESP32 boards *****/
-#elif defined(ESP32)
+//#elif defined(ESP32)
   /** ESP32 variants **/
 //  #define NON_ARDUINO   // MUST BE DEFINED!
-  #define ESP32_DEVKIT1_WROOM_32
+  //#define ESP32_DEVKIT1_WROOM_32
   // David Douard / Johann Wilhelm board layouts
   //#define ESP32_TTGO_T8_161
   //#define ESP32_ESP32DEV

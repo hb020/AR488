@@ -14,7 +14,7 @@
 #include "AR488_Eeprom.h"
 
 
-/***** FWVER "AR488 GPIB controller, ver. 0.53.10, 07/05/2025" *****/
+/***** FWVER "AR488 GPIB controller, ver. 0.53.11, 08/05/2025" *****/
 
 /*
   Arduino IEEE-488 implementation by John Chajecki
@@ -2486,8 +2486,9 @@ void fndl_h(char *params) {
   // Read parameters
   if (params == NULL) {
     // No parameters given - no action to be taken
-    errorMsg(1);
-    return;
+  //  errorMsg(1);
+  //  return;
+    j = 31; // Same as 'all'
   }
 
   // Is it a range?
@@ -2686,7 +2687,13 @@ void send_h(char *params) {
 
     }
 
-    gpibBus.unAddressDevice();
+Serial.println(pri);
+Serial.println(sec);
+Serial.println(param);
+
+
+
+//    gpibBus.unAddressDevice();
     gpibBus.addressDevice(pri, sec, TOLISTEN);
     gpibBus.sendData(param, strlen(param));
 
@@ -2694,9 +2701,8 @@ void send_h(char *params) {
       gpibBus.addressDevice(pri, sec, TOTALK);
       gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
       if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
+      gpibBus.unAddressDevice();
     }
-
-    gpibBus.unAddressDevice();
 
   }else{
     errorMsg(1);
