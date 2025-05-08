@@ -126,18 +126,18 @@ void GPIBbus::setOperatingMode(enum operatingModes mode) {
   uint8_t outputs = 0;
   switch (mode) {
     case OP_IDLE:
-      setGpibCtrlDir(0, CTRL_BITS);           // Set all control signals to input_pullup
+      setGpibCtrlDir(0, CTRL_BITS);             // Set all control signals to input_pullup
       break;
     case OP_CTRL:
       outputs = (IFC_BIT | REN_BIT | ATN_BIT);  // Signal IFC, REN and ATN, listen to SRQ
-      setGpibCtrlDir(outputs, CTRL_BITS);      // Set control inputs and outputs (0=input_pullup, 1=output)
-      setGpibCtrlState(outputs, outputs);  // Set control output signals to unasserted/HIGH
+      setGpibCtrlDir(outputs, CTRL_BITS);       // Set control inputs and outputs (0=input_pullup, 1=output)
+      setGpibCtrlState(outputs, outputs);       // Set control output signals to unasserted/HIGH
       break;
     case OP_DEVI:
-      outputs = (SRQ_BIT);                    // Signal SRQ, listen to IFC, REN and ATN
+      outputs = (SRQ_BIT);                      // Signal SRQ, listen to IFC, REN and ATN
       clearSignal(REN_BIT);
-      setGpibCtrlDir(outputs, CTRL_BITS);     // Set control inputs and outputs (0=input_pullup, 1=output)
-      setGpibCtrlState(outputs, outputs);   // Set control output signals to unasserted/HIGH
+      setGpibCtrlDir(outputs, CTRL_BITS);       // Set control inputs and outputs (0=input_pullup, 1=output)
+      setGpibCtrlState(outputs, outputs);       // Set control output signals to unasserted/HIGH
       break;
   }
 }
@@ -151,14 +151,14 @@ void GPIBbus::setTransmitMode(enum transmitModes mode) {
       setGpibCtrlDir(0, HSHK_BITS);           // Set all handshake signals to input_pullup
       break;
     case TM_RECV:
-      outputs = (NRFD_BIT | NDAC_BIT);       // Signal NRFD and NDAC, listen to DAV and EOI
-      setGpibCtrlDir(outputs, HSHK_BITS);    // Set handshake inputs and outputs (0=input_PULLUP, 1=output)
-      setGpibCtrlState(~outputs, outputs);  // Set handshake output signals to asserted/LOW
+      outputs = (NRFD_BIT | NDAC_BIT);        // Signal NRFD and NDAC, listen to DAV and EOI
+      setGpibCtrlDir(outputs, HSHK_BITS);     // Set handshake inputs and outputs (0=input_PULLUP, 1=output)
+      setGpibCtrlState(~outputs, outputs);    // Set handshake output signals to asserted/LOW
       break;
     case TM_SEND:
       outputs = (DAV_BIT | EOI_BIT);          // Signal DAV and EOI, listen to NRFD and NDAC
       setGpibCtrlDir(outputs, HSHK_BITS);     // Set handshake inputs and outputs (0=input_pullup, 1=output)
-      setGpibCtrlState(outputs, outputs); // Set handshake output signals to unasserted/HIGH
+      setGpibCtrlState(outputs, outputs);     // Set handshake output signals to unasserted/HIGH
       break;
   }
 }

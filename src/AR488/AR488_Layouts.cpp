@@ -667,8 +667,6 @@ void setGpibCtrlDir(uint8_t bits, uint8_t mask) {
 
 }
 
-
-
 #endif  // AR488_MEGA32U4_MICRO
 /***** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ *****/
 /***** MICRO PRO (32u4) BOARD LAYOUT for MICRO (Artag) *****/
@@ -1248,6 +1246,56 @@ void setGpibCtrlDir(uint8_t bits, uint8_t mask) {
 
 
 /***********************************/
+/***** ESP32 LAYOUT DEFINITION *****/
+/***** vvvvvvvvvvvvvvvvvvvvvvv *****/
+#ifdef ESP32_DEVKIT1_WROOM_32
+
+const uint32_t gpioDbMask = 0x00003FC0;
+const uint32_t gpioCtrlMask = 0x003FC000;
+const uint8_t gpioDbOffset = 6;
+const uint8_t gpioCtrlOffset = 14;
+
+
+const uint8_t databus[8] = { DIO1_PIN, DIO2_PIN, DIO3_PIN, DIO4_PIN, DIO5_PIN, DIO6_PIN, DIO7_PIN, DIO8_PIN };
+const uint8_t ctrlbus[8] = { IFC_PIN, NDAC_PIN, NRFD_PIN, DAV_PIN, EOI_PIN, REN_PIN, SRQ_PIN, ATN_PIN };
+
+
+/***** Set the GPIB data bus to input pullup *****/
+void readyGpibDbus() {
+  unsigned long pinmask = setRegisterMask(databus);
+//  gpio_set_pull_mode(pinmask, INPUT_PULLUP);
+//  gpio_set_pullup_enable(pinmask, true);
+}
+
+/*
+  // Set pin state
+  for (uint8_t i=0; i<8; i++) {
+    if (mask&(1<<i)) digitalWrite( ctrlbus[i], ((bits&(1<<i)) ? HIGH : LOW) );
+  }
+
+}
+*/
+
+unsigned long setRegisterMask(const uint8_t bus[]){
+  unsigned long pinreg = 0;
+  for (uint8_t i=0; i<8; i++){
+    pinreg = pinreg | (1<<databus[i]);
+  }
+  return pinreg;
+}
+
+
+
+
+
+#endif // ESP32_DEVKIT1_WROOM_32
+/***** ^^^^^^^^^^^^^^^^^^^^^^^ *****/
+/***** ESP32 LAYOUT DEFINITION *****/
+/***********************************/
+
+
+
+/***********************************/
 /***** RAS PICO BOARD LAYOUT 1 *****/
 /***** vvvvvvvvvvvvvvvvvvvvvvv *****/
 #ifdef RAS_PICO_L1
@@ -1575,7 +1623,6 @@ void setGpibCtrlDir(uint8_t bits, uint8_t mask){
   
 }
 
-
 #endif // RAS_PICO_L2
 /***** ^^^^^^^^^^^^^^^^^^^^^^^ *****/
 /***** RAS PICO BOARD LAYOUT 2 *****/
@@ -1637,10 +1684,6 @@ void setGpibDbus(uint8_t db) {
 /***** vvvvvvvvvvvvvvvvvvvvvvvvv *****/
 //#ifdef AR488_CUSTOM
 #if defined (AR488_CUSTOM) || defined (NON_ARDUINO)
-
-uint8_t databus[8] = { DIO1_PIN, DIO2_PIN, DIO3_PIN, DIO4_PIN, DIO5_PIN, DIO6_PIN, DIO7_PIN, DIO8_PIN };
-
-uint8_t ctrlbus[8] = { IFC_PIN, NDAC_PIN, NRFD_PIN, DAV_PIN, EOI_PIN, REN_PIN, SRQ_PIN, ATN_PIN };
 
 
 /***** Set the GPIB data bus to input pullup *****/

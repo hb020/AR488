@@ -71,7 +71,7 @@
 /***** ESP32 boards *****/
 #elif defined(ESP32)
   /* Board/layout selection */
-  #define NON_ARDUINO   // MUST BE DEFINED!
+//  #define NON_ARDUINO   // MUST BE DEFINED!
   #define ESP32_DEVKIT1_WROOM_32
   // David Douard / Johann Wilhelm board layouts
   //#define ESP32_TTGO_T8_161

@@ -351,6 +351,10 @@ uint8_t getMcpIntAReg();
 /***** vvvvvvvvvvvvvvvvvvvvvvv *****/
 #ifdef ESP32_DEVKIT1_WROOM_32
 
+// Pin numbers represent GPIOnum
+
+#define ESP32_FUNCTIONS
+
 #define DIO1_PIN  32   /* GPIB 1  */
 #define DIO2_PIN  33   /* GPIB 2  */
 #define DIO3_PIN  25   /* GPIB 3  */
@@ -599,6 +603,27 @@ void gpioFuncList();
 
 
 /**************************************/
+/***** ESP32 DEFINITIONS SECTION *****/
+/***** vvvvvvvvvvvvvvvvvvvvvvvvvv *****/
+#ifdef ESP32_FUNCTIONS
+
+//#include <driver/gpio.h>
+#include <esp32-hal-gpio.h>
+#include <esp32-hal-matrix.h>
+#include <esp32/rom/gpio.h>
+#include <hal/gpio_hal.h>
+#include <soc/soc.h>
+
+unsigned long setRegisterMask(const uint8_t bus[]);
+
+#endif  // ESP32_FUNCTIONS
+/***** ^^^^^^^^^^^^^^^^^^^^^^^^^^ *****/
+/***** GLOBAL DEFINITIONS SECTION *****/
+/**************************************/
+
+
+
+/**************************************/
 /***** GLOBAL DEFINITIONS SECTION *****/
 /***** vvvvvvvvvvvvvvvvvvvvvvvvvv *****/
 
@@ -618,8 +643,6 @@ uint8_t getGpibPinState(uint8_t pin);
 #if defined(RAS_PICO_L1) || defined(RAS_PICO_L2)
   void initRpGpioPins();
 #endif
-
-
 
 
 /***** ^^^^^^^^^^^^^^^^^^^^^^^^^^ *****/
