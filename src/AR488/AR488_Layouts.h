@@ -6,7 +6,7 @@
 #include "AR488_Config.h"
 
 
-/***** AR488_Hardware.h, ver. 0.53.07, 30/04/2025 *****/
+/***** AR488_Hardware.h, ver. 0.53.10, 07/05/2025 *****/
 
 
 ///=================================///
@@ -346,6 +346,39 @@ uint8_t getMcpIntAReg();
 
 
 
+/*************************************/
+/***** POE_ETHERNET_GPIB_ADAPTOR *****/
+/***** vvvvvvvvvvvvvvvvvvvvvvvvv *****/
+#ifdef POE_ETHERNET_GPIB_ADAPTOR
+
+uint8_t reverseBits(uint8_t dbyte);
+
+/***** KOFEN's POE Ethernet Gpib Adaptor pinout *****/
+#define DIO1_PIN  22  /* GPIB 1  : PORTC bit 0 */
+#define DIO2_PIN  23  /* GPIB 2  : PORTC bit 1 */
+#define DIO3_PIN  24  /* GPIB 3  : PORTC bit 2 */
+#define DIO4_PIN  24  /* GPIB 4  : PORTC bit 3 */
+#define DIO5_PIN  26  /* GPIB 13 : PORTC bit 4 */
+#define DIO6_PIN  27  /* GPIB 14 : PORTC bit 5 */
+#define DIO7_PIN  28  /* GPIB 15 : PORTD bit 4 */
+#define DIO8_PIN  29  /* GPIB 16 : PORTD bit 5 */
+
+#define IFC_PIN   18  /* GPIB 9  : PORTD bit 5 */
+#define NDAC_PIN  17  /* GPIB 8  : PORTD bit 6 */
+#define NRFD_PIN  16  /* GPIB 7  : PORTD bit 7 */
+#define DAV_PIN   15  /* GPIB 6  : PORTB bit 0 */
+#define EOI_PIN   14  /* GPIB 5  : PORTB bit 1 */
+#define SRQ_PIN   19  /* GPIB 10 : PORTD bit 3 */
+#define REN_PIN   21  /* GPIB 17 : PORTD bit 2 */
+#define ATN_PIN   20  /* GPIB 11 : PORTD bit 4 */
+
+#endif  // POE_ETHERNET_GPIB_ADAPTOR
+/***** ^^^^^^^^^^^^^^^^^^^^^^^^^ *****/
+/***** POE_ETHERNET_GPIB_ADAPTOR *****/
+/*************************************/
+
+
+
 /***********************************/
 /***** ESP32 LAYOUT DEFINITION *****/
 /***** vvvvvvvvvvvvvvvvvvvvvvv *****/
@@ -630,7 +663,7 @@ unsigned long setRegisterMask(const uint8_t bus[]);
 void readyGpibDbus();
 uint8_t readGpibDbus();
 void setGpibDbus(uint8_t db);
-//oid setGpibState(uint8_t bits, uint8_t mask, uint8_t mode);
+//void setGpibState(uint8_t bits, uint8_t mask, uint8_t mode);
 void setGpibCtrlState(uint8_t bits, uint8_t mask);
 void setGpibCtrlDir(uint8_t bits, uint8_t mask);
 uint8_t getGpibPinState(uint8_t pin);

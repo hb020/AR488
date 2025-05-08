@@ -3,7 +3,7 @@
 #include "AR488_Config.h"
 #include "AR488_GPIBbus.h"
 
-/***** AR488_GPIB.cpp, ver. 0.53.07, 30/04/2025 *****/
+/***** AR488_GPIB.cpp, ver. 0.53.10, 07/05/2025 *****/
 
 
 /****** Process status values *****/
@@ -15,9 +15,6 @@
 #define CR 0xD     // Carriage return
 #define LF 0xA     // Newline/linefeed
 #define PLUS 0x2B  // '+' character
-
-
-
 
 
 
@@ -122,7 +119,7 @@ void GPIBbus::startControllerMode() {
 
 
 /***** Set the interface mode *****/
-void GPIBbus::setOperatingMode(enum operatingModes mode) {
+void GPIBbus::setOperatingMode(enum operatingMode mode) {
   uint8_t outputs = 0;
   switch (mode) {
     case OP_IDLE:
@@ -144,7 +141,7 @@ void GPIBbus::setOperatingMode(enum operatingModes mode) {
 
 
 /***** Set the transmission mode *****/
-void GPIBbus::setTransmitMode(enum transmitModes mode) {
+void GPIBbus::setTransmitMode(enum transmitMode mode) {
   uint8_t outputs = 0;
   switch (mode) {
     case TM_IDLE:
@@ -497,7 +494,7 @@ bool GPIBbus::sendUNL() {
 
 /*****  Send a single byte GPIB command *****/
 bool GPIBbus::sendCmd(uint8_t cmdByte) {
-  enum gpibHandshakeStates state;
+  enum gpibHandshakeState state;
 
   // Set lines for command and assert ATN
   if (cstate != CCMS) setControls(CCMS);
@@ -520,14 +517,15 @@ bool GPIBbus::sendCmd(uint8_t cmdByte) {
  * Readbreak:
  * 7 - command received via serial
  */
-bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte) {
+enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte) {
 
   uint8_t bytes[3] = { 0 };  // Received byte buffer
   uint8_t eor = cfg.eor & 7;
   int x = 0;
   bool readWithEoi = false;
   bool eoiDetected = false;
-  enum gpibHandshakeStates state = HANDSHAKE_COMPLETE;
+  enum gpibHandshakeState hstate = HANDSHAKE_COMPLETE;
+  enum receiveState rstate = RECEIVE_INIT;
 
   endByte = endByte;  // meaningless but defeats vcompiler warning!
 
@@ -571,23 +569,26 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
   readyGpibDbus();
 
   // Perform read of data (r=0: data read OK; r>0: GPIB read error);
-  while (state == HANDSHAKE_COMPLETE) {
+  while (hstate == HANDSHAKE_COMPLETE) {
 
     // txBreak > 0 indicates break condition
-    if (txBreak) break;
+    if (txBreak) {
+      rstate = RECEIVE_BREAK;
+      break;
+    }
 
     // ATN asserted
     if (isAsserted(ATN_PIN)) break;
 
     // Read the next character on the GPIB bus
-    state = readByte(&bytes[0], readWithEoi, &eoiDetected);
+    hstate = readByte(&bytes[0], readWithEoi, &eoiDetected);
 
 
     // If IFC or ATN asserted then break here
-    if ((state == IFC_ASSERTED) || (state == ATN_ASSERTED)) break;
+    if ((hstate == IFC_ASSERTED) || (hstate == ATN_ASSERTED)) break;
 
     // If successfully received character
-    if (state == HANDSHAKE_COMPLETE) {
+    if (hstate == HANDSHAKE_COMPLETE) {
 #ifdef DEBUG_GPIBbus_RECEIVE
       DB_HEX_PRINT(bytes[0]);
 #else
@@ -600,13 +601,22 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
 
       // EOI detection enabled and EOI detected?
       if (readWithEoi) {
-        if (eoiDetected) break;
+        if (eoiDetected) {
+          rstate = RECEIVE_EOI;
+          break;
+        }
       } else {
         // Has a termination sequence been found ?
         if (detectEndByte) {
-          if (bytes[0] == endByte) break;
+          if (bytes[0] == endByte) {
+            rstate = RECEIVE_ENDCHAR;
+            break;
+          }
         } else {
-          if (isTerminatorDetected(bytes, eor)) break;
+          if (isTerminatorDetected(bytes, eor)) {
+            rstate = RECEIVE_ENDL;
+            break;
+          }
         }
       }
 
@@ -615,6 +625,7 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
       bytes[1] = bytes[0];
     } else {
       // Stop (error or timeout)
+      rstate = RECEIVE_ERR;
       break;
     }
   }
@@ -670,12 +681,14 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
 #ifdef DEBUG_GPIBbus_RECEIVE
   DB_PRINT(F("done."), "");
 #endif
-
-  if (state == HANDSHAKE_COMPLETE) {
+/*
+  if (hstate == HANDSHAKE_COMPLETE) {
     return OK;
   } else {
     return ERR;
   }
+*/
+  return rstate;
 }
 
 
@@ -683,7 +696,7 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
 void GPIBbus::sendData(char *data, uint8_t dsize) {
   //  bool err = false;
   uint8_t tc;
-  enum gpibHandshakeStates state;
+  enum gpibHandshakeState state;
 
   switch (cfg.eos) {
     case 1:
@@ -1071,12 +1084,12 @@ void GPIBbus::clearDataBus() {
  * (- this function is called in a loop to read data    )
  * (- the GPIB bus must already be configured to listen )
  */
-enum gpibHandshakeStates GPIBbus::readByte(uint8_t *db, bool readWithEoi, bool *eoi) {
+enum gpibHandshakeState GPIBbus::readByte(uint8_t *db, bool readWithEoi, bool *eoi) {
 
   unsigned long startMillis = millis();
   unsigned long currentMillis = startMillis + 1;
   const unsigned long timeval = cfg.rtmo;
-  enum gpibHandshakeStates gpibState = HANDSHAKE_START;
+  enum gpibHandshakeState gpibState = HANDSHAKE_START;
 
   bool atnStat = isAsserted(ATN_PIN);  // Capture state of ATN
   *eoi = false;
@@ -1153,11 +1166,11 @@ enum gpibHandshakeStates GPIBbus::readByte(uint8_t *db, bool readWithEoi, bool *
 }
 
 
-enum gpibHandshakeStates GPIBbus::writeByte(uint8_t db, bool isLastByte) {
+enum gpibHandshakeState GPIBbus::writeByte(uint8_t db, bool isLastByte) {
   unsigned long startMillis = millis();
   unsigned long currentMillis = startMillis + 1;
   const unsigned long timeval = cfg.rtmo;
-  enum gpibHandshakeStates gpibState = HANDSHAKE_START;
+  enum gpibHandshakeState gpibState = HANDSHAKE_START;
 
   // Wait for interval to expire
   while ((unsigned long)(currentMillis - startMillis) < timeval) {

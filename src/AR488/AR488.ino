@@ -14,7 +14,7 @@
 #include "AR488_Eeprom.h"
 
 
-/***** FWVER "AR488 GPIB controller, ver. 0.53.07, 30/04/2025" *****/
+/***** FWVER "AR488 GPIB controller, ver. 0.53.10, 07/05/2025" *****/
 
 /*
   Arduino IEEE-488 implementation by John Chajecki
@@ -806,7 +806,7 @@ static cmdRec cmdHidx [] = {
   { "auto",        2, amode_h     },
   { "clr",         2, (void(*)(char*)) clr_h     },
   { "dcl",         2, (void(*)(char*)) dcl_h     },
-  { "default",     3, (void(*)(char*)) default_h },
+  { "default",     3, default_h   },
   { "eoi",         3, eoi_h       },
   { "eor",         3, eor_h       },
   { "eos",         3, eos_h       },
@@ -1438,7 +1438,7 @@ void llo_h(char *params) {
     // For 'all' send LLO to the bus without addressing any device
     // Devices will show REM as soon as they are addressed and need to be released with LOC
     if (params != NULL) {
-      if (0 == strncmp(params, "all", 3)) {
+      if (0 == strncasecmp(params, "all", 3)) {
         if (gpibBus.sendCmd(GC_LLO)) {
           if (isVerb) dataPort.println(F("Failed to send universal LLO."));
         }
@@ -1460,7 +1460,7 @@ void loc_h(char *params) {
   // REN *MUST* be asserted (LOW)
   if (digitalRead(REN_PIN)==LOW) {
     if (params != NULL) {
-      if (strncmp(params, "all", 3) == 0) {
+      if (strncasecmp(params, "all", 3) == 0) {
         // Send request to clear all devices to local
         gpibBus.sendAllClear();
       }
@@ -1579,7 +1579,7 @@ void spoll_h(char *params) {
   char *param;
   uint8_t addrs[15];
   uint8_t sb = 0;
-  enum gpibHandshakeStates state;
+  enum gpibHandshakeState state;
   uint8_t j = 0;
   uint16_t addrval = 0;
   bool all = false;
@@ -1890,7 +1890,15 @@ void dcl_h() {
 
 
 /***** Re-load default configuration *****/
-void default_h() {
+void default_h(char *params) {
+  if (params != NULL) {
+    if (strncasecmp(params, "wipe", 4) == 0) {
+      epErase();
+      dataPort.println(F("EEPROM erased!"));
+    }else{
+      errorMsg(2);
+    }
+  }
   gpibBus.setDefaultCfg();
 }
 
@@ -2197,7 +2205,7 @@ void xdiag_h(char *params){
   // Get first parameter (mode = 0 or 1)
   param = strtok(params, " ,\t");
 
-  if ( strncasecmp(param, "pins", 4) ==0) {
+  if (strncasecmp(param, "pins", 4) == 0) {
     printDbPinout();
     printCtrlPinout();
     return;
@@ -3162,7 +3170,7 @@ void device_gtl_h(){
 void lonMode(){
 
   uint8_t db = 0;
-  enum gpibHandshakeStates state;
+  enum gpibHandshakeState state;
   bool eoiDetected = false;
 
   // Set bus for device listner active mode

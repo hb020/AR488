@@ -7,7 +7,7 @@
 
 
 /***** Firmware version *****/
-#define FWVER "AR488 GPIB controller, ver. 0.53.07, 30/04/2025"
+#define FWVER "AR488 GPIB controller, ver. 0.53.10, 07/05/2025"
 
 
 /***** BOARD CONFIGURATION *****/
@@ -36,41 +36,41 @@
    * section below
    */
 
-/*** UNO and NANO boards ***/
 #elif __AVR_ATmega328P__
-  /* Board/layout selection */
+  /*** ATmega328P - UNO R3, Nano ***/
   #define AR488_UNO
   //#define AR488_NANO
   //#define AR488_MCP23S17
 
-/*** MEGA 32U4 based boards (Micro, Leonardo) ***/
+#elif __AVR_ATmega328PB__
+  /** ATmega 328PB variant - some clone Nano boards **/
+  //#define AR488_UNO
+  #define AR488_NANO
+  //#define AR488_328PB_ALT
+
 #elif __AVR_ATmega32U4__
-  /*** Board/layout selection ***/
+  /** ATmega 32u4 - Micro, Leonardo  **/
   //#define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
   #define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
-  
-/*** MEGA 2560 board ***/
+
 #elif __AVR_ATmega2560__
-  /*** Board/layout selection ***/
+  /** ATmega2560 - Mega 2560 **/
   #define AR488_MEGA2560_D
   //#define AR488_MEGA2560_E1
   //#define AR488_MEGA2560_E2
 
 /***** Panduino Mega 644 or Mega 1284 board *****/
 #elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
-  /* Board/layout selection */
+  /** ATmega 644P, ATmega 1284P, e.g. Panduino **/
   #define AR488_MEGA644P_MCGRAW
 
-/***** Pololu 328PB board *****/
-#elif __AVR_ATmega328PB__
-  /* Board/layout selection */
-  //#define AR488_UNO
-  #define AR488_NANO
-  //#define AR488_328PB_ALT
+#elif __AVR_ATmega4809__
+  /** ATmega4809 - Nano Every, UNO WiFi Rev2 **/
+  #define POE_ETHERNET_GPIB_ADAPTOR
 
 /***** ESP32 boards *****/
 #elif defined(ESP32)
-  /* Board/layout selection */
+  /** ESP32 variants **/
 //  #define NON_ARDUINO   // MUST BE DEFINED!
   #define ESP32_DEVKIT1_WROOM_32
   // David Douard / Johann Wilhelm board layouts
@@ -79,9 +79,8 @@
   //#define ESP32_LOLIN32_161   // ESP32_LOLIN32_161_V2 profile has the same pin assigments
   //#define ESP32_S2_161
 
-/***** RPI PIco and Pico W *****/
 #elif defined(ARDUINO_ARCH_RP2040)
-  /* Board/layout selection */
+  /** RP2040 Boards **/
   #define RAS_PICO_L1
   //#define RAS_PICO_L2
 
