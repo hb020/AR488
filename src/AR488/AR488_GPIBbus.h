@@ -110,6 +110,7 @@ enum receiveState: uint8_t {
   RECEIVE_INIT,     // Initial state
   RECEIVE_BREAK,    // Receive interrupted by user command
   RECEIVE_ATN,      // Receive interrupted by ATN
+  RECEIVE_IFC,      // Receive interrupted by IFC
   RECEIVE_EOI,      // Receive OK, terminated with EOI
   RECEIVE_ENDCHAR,  // Receive OK, terminated with custom end character
   RECEIVE_ENDL,     // Receive OK, terminated line of text (CR/LF)

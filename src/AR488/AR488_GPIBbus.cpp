@@ -578,14 +578,24 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
     }
 
     // ATN asserted
-    if (isAsserted(ATN_PIN)) break;
+    if (isAsserted(ATN_PIN)) {
+      rstate = RECEIVE_ATN;
+      break;
+    }
 
     // Read the next character on the GPIB bus
     hstate = readByte(&bytes[0], readWithEoi, &eoiDetected);
 
-
     // If IFC or ATN asserted then break here
-    if ((hstate == IFC_ASSERTED) || (hstate == ATN_ASSERTED)) break;
+    if (hstate == IFC_ASSERTED) {
+      rstate = RECEIVE_IFC;
+      break;
+    }
+
+    if (hstate == ATN_ASSERTED) {
+      rstate = RECEIVE_ATN;
+      break;
+    }
 
     // If successfully received character
     if (hstate == HANDSHAKE_COMPLETE) {
