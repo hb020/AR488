@@ -2687,11 +2687,11 @@ void send_h(char *params) {
 
     }
 
+/*
 Serial.println(pri);
 Serial.println(sec);
 Serial.println(param);
-
-
+*/
 
 //    gpibBus.unAddressDevice();
     gpibBus.addressDevice(pri, sec, TOLISTEN);
