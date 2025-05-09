@@ -50,8 +50,8 @@
 
 #elif __AVR_ATmega32U4__
   /** ATmega 32u4 - Micro, Leonardo  **/
-  //#define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
-  #define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
+  #define AR488_MEGA32U4_MICRO  // Artag's design for Micro board
+  //#define AR488_MEGA32U4_LR3  // Leonardo R3 (same pin layout as Uno)
 
 #elif __AVR_ATmega2560__
   /** ATmega2560 - Mega 2560 **/
