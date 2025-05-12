@@ -476,7 +476,7 @@ if (lnRdy>0){
       // Auto-read data from GPIB bus following any command
       if (gpibBus.cfg.amode == 1) {
         gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
-        errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+        errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0, 0);
         if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
         gpibBus.unAddressDevice();
       }
@@ -484,7 +484,7 @@ if (lnRdy>0){
       // Auto-receive data from GPIB bus following a query command
       if (gpibBus.cfg.amode == 2 && isQuery) {
         gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
-        errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+        errFlg = gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0, 0);
         if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
         isQuery = false;
         gpibBus.unAddressDevice();
@@ -497,7 +497,7 @@ if (lnRdy>0){
       // Nothing is waiting on the serial input so read data from GPIB
       if (lnRdy==0) {
         if (gpibBus.haveAddressedDevice() == TONONE) gpibBus.addressDevice(gpibBus.cfg.paddr, gpibBus.cfg.saddr, TOTALK);
-        errFlg = gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte);
+        errFlg = gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte, 0);
         if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
       }
     }
@@ -1413,7 +1413,7 @@ void read_h(char *params) {
     autoRead = true;
   } else {
     // If auto mode is disabled we do a single read
-    gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte);
+    gpibBus.receiveData(dataPort, readWithEoi, readWithEndByte, endByte, 0);
     if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
     gpibBus.unAddressDevice();
   }
@@ -2114,7 +2114,7 @@ void repeat_h(char *params) {
         // Send string to instrument
         gpibBus.sendData(param, strlen(param));
         delay(tmdly);
-        gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+        gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0, 0);
       }
     } else {
       errorMsg(2);
@@ -2699,7 +2699,7 @@ Serial.println(param);
 
     if (gpibBus.cfg.amode == 1) {
       gpibBus.addressDevice(pri, sec, TOTALK);
-      gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0);
+      gpibBus.receiveData(dataPort, gpibBus.cfg.eoi, false, 0, 0);
       if (gpibBus.cfg.hflags & 0x02) showFlag(F("Read^OK"));
       gpibBus.unAddressDevice();
     }
@@ -2761,7 +2761,7 @@ void secread_h(char *params) {
     gpibBus.setControls(CIDS);
     delay(50);
     gpibBus.addressDevice(pri, sec, TOTALK);
-    gpibBus.receiveData(dataPort, true, false, 0);
+    gpibBus.receiveData(dataPort, true, false, 0, 0);
     gpibBus.unAddressDevice();
 
   }else{
@@ -3068,8 +3068,8 @@ void execGpibCmd(uint8_t gpibcmd){
 
 /***** Device is addressed to listen - so listen *****/
 void device_listen_h(){
-  // Receivedata params: stream, detectEOI, detectEndByte, endByte
-  gpibBus.receiveData(dataPort, false, false, 0x0);
+  // Receivedata params: stream, detectEOI, detectEndByte, endByte, maxSize
+  gpibBus.receiveData(dataPort, false, false, 0x0, 0);
 }
 
 

@@ -517,7 +517,7 @@ bool GPIBbus::sendCmd(uint8_t cmdByte) {
  * Readbreak:
  * 7 - command received via serial
  */
-enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte) {
+enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte, int maxSize) {
 
   uint8_t bytes[3] = { 0 };  // Received byte buffer
   uint8_t eor = cfg.eor & 7;
@@ -527,6 +527,7 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
   enum gpibHandshakeState hstate = HANDSHAKE_COMPLETE;
   enum receiveState rstate = RECEIVE_INIT;
 
+  if (cfg.eot_en && maxSize > 0) maxSize--;  // EOT character might get added to the end of the string
   endByte = endByte;  // meaningless but defeats vcompiler warning!
 
   // Reset transmission break flag
@@ -629,6 +630,10 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
           }
         }
       }
+      if ((maxSize > 0) && (x >= maxSize)) {
+        rstate = RECEIVE_LIMIT;
+        break;
+      }      
 
       // Shift last three bytes in memory
       bytes[2] = bytes[1];
@@ -703,7 +708,7 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
 
 
 /***** Send a series of characters as data to the GPIB bus *****/
-void GPIBbus::sendData(char *data, uint8_t dsize) {
+void GPIBbus::sendData(const char *data, uint8_t dsize) {
   //  bool err = false;
   uint8_t tc;
   enum gpibHandshakeState state;

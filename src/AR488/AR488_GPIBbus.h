@@ -217,8 +217,8 @@ public:
   bool sendSecondaryCmd(uint8_t paddr, uint8_t saddr, char * data, uint8_t dsize);
   enum gpibHandshakeState readByte(uint8_t *db, bool readWithEoi, bool *eoi);
   enum gpibHandshakeState writeByte(uint8_t db, bool isLastByte);
-  enum receiveState receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte);
-  void sendData(char *data, uint8_t dsize);
+  enum receiveState receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte, int maxSize);
+  void sendData(const char *data, uint8_t dsize);
   void clearDataBus();
   void setControlVal(uint8_t value);
   void setDataVal(uint8_t value);
