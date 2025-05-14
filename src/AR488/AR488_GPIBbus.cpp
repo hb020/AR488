@@ -665,29 +665,31 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
 
   // Verbose timeout error
 #ifdef DEBUG_GPIBbus_RECEIVE
-  if (state != HANDSHAKE_COMPLETE) {
+  if (hstate != HANDSHAKE_COMPLETE) {
     DB_PRINT(F("Timeout waiting for sender!"), "");
     DB_PRINT(F("Timeout waiting for transfer to complete!"), "");
   }
 #endif
 
-  // Return controller to idle state
-  if (cfg.cmode == 2) {
+  if (rstate != RECEIVE_LIMIT) {
+    // Return controller to idle state
+    if (cfg.cmode == 2) {
 
-    // Untalk bus and unlisten controller
-/*
-    if (unAddressDevice()) {
-#ifdef DEBUG_GPIBbus_RECEIVE
-      DB_PRINT(F("Failed to untalk bus"), "");
-#endif
+      // Untalk bus and unlisten controller
+  /*
+      if (unAddressDevice()) {
+  #ifdef DEBUG_GPIBbus_RECEIVE
+        DB_PRINT(F("Failed to untalk bus"), "");
+  #endif
+      }
+  */
+      // Set controller back to idle state
+      setControls(CIDS);
+
+    } else {
+      // Set device back to idle state
+      setControls(DIDS);
     }
-*/
-    // Set controller back to idle state
-    setControls(CIDS);
-
-  } else {
-    // Set device back to idle state
-    setControls(DIDS);
   }
 
   // Reset break flag
@@ -708,7 +710,7 @@ enum receiveState GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool 
 
 
 /***** Send a series of characters as data to the GPIB bus *****/
-void GPIBbus::sendData(const char *data, uint8_t dsize) {
+void GPIBbus::sendData(const char *data, uint8_t dsize, bool isLastPacket) {
   //  bool err = false;
   uint8_t tc;
   enum gpibHandshakeState state;
@@ -793,12 +795,14 @@ void GPIBbus::sendData(const char *data, uint8_t dsize) {
     }
   }
 
-  if (cfg.cmode == 2) {  // Controller mode
-    // Controller - set lines to idle
-    setControls(CIDS);
-  } else {  // Device mode
-    // Set control lines to idle
-    setControls(DIDS);
+  if (isLastPacket) {
+    if (cfg.cmode == 2) {  // Controller mode
+      // Controller - set lines to idle
+      setControls(CIDS);
+    } else {  // Device mode
+      // Set control lines to idle
+      setControls(DIDS);
+    }
   }
 
 #ifdef DEBUG_GPIBbus_SEND
